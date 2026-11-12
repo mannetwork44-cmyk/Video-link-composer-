@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Video Link Composer</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:20px;background:#101827;color:white;font-family:Arial}
+.card{max-width:500px;margin:auto;background:#1e293b;padding:22px;border-radius:18px}
+h2{text-align:center;color:#38bdf8}
+label{display:block;margin-top:20px;margin-bottom:9px}
+input{width:100%;padding:13px;border-radius:9px;border:1px solid #64748b;background:#0f172a;color:white}
+button{width:100%;padding:14px;margin-top:15px;border:0;border-radius:9px;background:#0ea5e9;color:white;font-size:16px;font-weight:bold}
+video{width:100%;margin-top:18px;border-radius:12px;display:none}
+a{display:block;text-align:center;margin-top:18px;color:#4ade80;font-size:18px;word-break:break-all}
+small{color:#cbd5e1}
+</style>
+</head>
+<body>
+<div class="card">
+<h2>🎬 Video Link Composer</h2>
+<p>Upload Video और Website Link जोड़ें</p>
+
+<label>📁 अपना वीडियो चुनें</label>
+<input type="file" id="videoFile" accept="video/*">
+
+<video id="preview" controls></video>
+
+<label>🔗 Website URL डालें</label>
+<input type="url" id="website" placeholder="https://example.com">
+
+<button onclick="makeLink()">Create Clickable Link</button>
+<button onclick="copyLink()">Copy Link</button>
+
+<a id="result" target="_blank"></a>
+<p><small>वीडियो का Preview आपके फोन पर दिखेगा। शेयर करने के लिए वीडियो को अलग से ऑनलाइन होस्ट करना होगा।</small></p>
+</div>
+
+<script>
+let videoURL="";
+
+document.getElementById("videoFile").addEventListener("change",function(){
+ const file=this.files[0];
+ if(!file)return;
+ if(videoURL)URL.revokeObjectURL(videoURL);
+ videoURL=URL.createObjectURL(file);
+ const v=document.getElementById("preview");
+ v.src=videoURL;
+ v.style.display="block";
+});
+
+function makeLink(){
+ const url=document.getElementById("website").value.trim();
+ if(!videoURL){
+ alert("पहले वीडियो चुनें");
+ return;
+ }
+ try{
+ const parsed=new URL(url);
+ if(!["http:","https:"].includes(parsed.protocol))throw Error();
+ const a=document.getElementById("result");
+ a.href=parsed.href;
+ a.textContent="▶ Watch Website";
+ }catch(e){
+ alert("सही Website URL डालें");
+ }
+}
+
+function copyLink(){
+ const a=document.getElementById("result");
+ if(!a.href){
+ alert("पहले Create Clickable Link दबाएँ");
+ return;
+ }
+ navigator.clipboard.writeText(a.href)
+ .then(()=>alert("Website link copied!"))
+ .catch(()=>alert("Link copy नहीं हुआ"));
+}
+</script>
+</body>
+</html>
